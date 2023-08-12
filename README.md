@@ -6,7 +6,7 @@ The tools in this repository are intended to create cell-by-transcript counts ta
 
 ## Requirements
 ### Hardware
-TBD
+InDev
 
 ### Software
 1) `anaconda3` version 5.0.1
@@ -28,16 +28,25 @@ Installation time in the order of minutes.
 5) Create `isoquant` conda environment: `conda env create -f isoquant_conda_enviroment.yml`
 
 ## Usage
-Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately XXX minute when using N cores. 
+Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately XXX minute when using XXX cores. 
 
 ### Example dataset
-TDB
+InDev
 
 ### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
-TDB
+InDev
+
+#### Output
+InDev
 
 ### UMI deduplication using `umi-tools`
-TDB
+InDev
+
+#### Output
+InDev
 
 ### Transcript detection and quantitation using `isoquant`
-TDB
+InDev
+
+#### Output
+InDev
