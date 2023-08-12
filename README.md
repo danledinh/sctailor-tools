@@ -30,4 +30,14 @@ Installation time in the order of minutes.
 ## Usage
 Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately XXX minute when using N cores. 
 
-TBD
+### Example dataset
+TDB
+
+### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
+TDB
+
+### UMI deduplication using `umi-tools`
+TDB
+
+### Transcript detection and quantitation using `isoquant`
+TDB
