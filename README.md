@@ -34,19 +34,42 @@ Runtime in the order of hours to days depending on sequencing depth. Test data r
 InDev
 
 ### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
-InDev
+```
+nextflow run epi2me-labs/wf-single-cell -r v0.1.5 \
+    -w ${OUTPUT}/${PREFIX}_workspace
+    -c ${CONFIG} \
+    -profile singularity \
+    --max_threads {CORES} \
+	  --resources_mm2_max_threads {CORES} \
+    --fastq ${FQ} \
+    --ref_genome_dir ${REFERENCE} \
+    --out_dir ${OUTPUT}
+
+# merge .bam intermediates
+cd ${OUTPUT}/bams
+samtools merge wf_SC.bam *.bam
+samtools index wf_SC.bam
+```
 
 #### Output
 InDev
 
 ### UMI deduplication using `umi-tools`
-InDev
+```
+# tag merged bam
+umi_tools group -I ${OUTPUT}/wf_SC.bam --group-out=grouped.tsv --output-bam --log=group.log --paired
+
+# keep longest read in each UMI group
+python3 dedup_UMI.py ${OUTPUT}/grouped_sorted.bam
+```
 
 #### Output
 InDev
 
 ### Transcript detection and quantitation using `isoquant`
-InDev
+```
+isoquant.py --reference ${REFERENCE} --genedb ${GTF} --bam ${OUTPUT}/bamf.bam --data_type (nanopore) -o ${OUTPUT}
+```
 
 #### Output
 InDev
