@@ -6,7 +6,7 @@ The tools in this repository are intended to create cell-by-transcript counts ta
 
 ## Requirements
 ### Hardware
-InDev
+Data processing was performed on a High-Performance Computing (HPC) platform running `CentOS 7.9`.
 
 ### Software
 1) `anaconda3` version 5.0.1
