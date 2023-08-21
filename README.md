@@ -31,7 +31,7 @@ Installation time in the order of minutes.
 Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately XXX minute when using XXX cores. 
 
 ### Example dataset
-InDev
+Download `LR_3CL_cancer_R1_1.sub1000k.fastq.gz` using SRA-toolkit and BioProject accession PRJNA993664. See tutorial here: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump. Then, downsample data to 1 million reads using SeqKit (https://bioinf.shenwei.me/seqkit/usage/#sample).
 
 ### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
 ```
