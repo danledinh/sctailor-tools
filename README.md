@@ -28,12 +28,13 @@ Installation time in the order of minutes.
 5) Create `isoquant` conda environment: `conda env create -f isoquant_conda_enviroment.yml`
 
 ## Usage
-Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately XXX minute when using XXX cores. 
+Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately 8 hours when using 4 cores. 
 
 ### Example dataset
 Download `LR_3CL_cancer_R1_1.sub1000k.fastq.gz` using SRA-toolkit and BioProject accession PRJNA993664. See tutorial here: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump. Then, downsample data to 1 million reads using SeqKit (https://bioinf.shenwei.me/seqkit/usage/#sample).
 
 ### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
+Details found here: https://github.com/epi2me-labs/wf-single-cell
 ```
 nextflow run epi2me-labs/wf-single-cell -r v0.1.5 \
     -w ${OUTPUT}/${PREFIX}_workspace
@@ -50,26 +51,26 @@ cd ${OUTPUT}/bams
 samtools merge wf_SC.bam *.bam
 samtools index wf_SC.bam
 ```
-
 #### Output
-InDev
+Intermediate chromosome-specific .bam files are created from the `wf-single-cell` workflow. Then, `samtools` is required to merge these .bam files before UMI group assignment using `umi-tools`.
 
 ### UMI deduplication using `umi-tools`
+Details found here: https://github.com/CGATOxford/UMI-tools
 ```
 # tag merged bam
 umi_tools group -I ${OUTPUT}/wf_SC.bam --group-out=grouped.tsv --output-bam --log=group.log --paired
 
-# keep longest read in each UMI group
+# keep longest read in each UMI group (dedup_UMI.py included in git repo)
+### Alternatively, use `umi_tools dedup`
 python3 dedup_UMI.py ${OUTPUT}/grouped_sorted.bam
 ```
-
 #### Output
-InDev
+Resultant .bam file contains representative sequence for each UMI group.
 
 ### Transcript detection and quantitation using `isoquant`
+Details found here: https://github.com/ablab/IsoQuant
 ```
 isoquant.py --reference ${REFERENCE} --genedb ${GTF} --bam ${OUTPUT}/bamf.bam --data_type (nanopore) -o ${OUTPUT}
 ```
-
 #### Output
-InDev
+The cell-by-gene and cell-by-transcript tables (`SAMPLE_ID.gene_grouped_counts.tsv` and `SAMPLE_ID.transcript_grouped_counts.tsv`, respectively) were used in downstream analyses. 
