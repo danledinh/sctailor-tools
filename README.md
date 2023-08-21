@@ -28,7 +28,7 @@ Installation time in the order of minutes.
 5) Create `isoquant` conda environment: `conda env create -f isoquant_conda_enviroment.yml`
 
 ## Usage
-Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately 8 hours when using 4 cores. 
+Runtime in the order of hours to days depending on sequencing depth. Test data requires approximately 8 hours using 4 cores. 
 
 ### Example dataset
 Download `LR_3CL_cancer_R1_1.sub1000k.fastq.gz` using SRA-toolkit and BioProject accession PRJNA993664. See tutorial here: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump. Then, downsample data to 1 million reads using SeqKit (https://bioinf.shenwei.me/seqkit/usage/#sample).
