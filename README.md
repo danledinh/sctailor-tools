@@ -17,6 +17,7 @@ Data processing was performed on a High-Performance Computing (HPC) platform run
 8) `wf-single-cell` version 0.1.5 (epi2me-labs)
 9) `umi-tools` version 1.1.2 (conda environment)
 10) `isoquant` version 3.3 (conda environment)
+11) `samtools` version 1.18
 
 ## Installation
 Installation time in the order of minutes.
@@ -24,7 +25,7 @@ Installation time in the order of minutes.
 1) Clone this repository
 2) Install listed requirements
 3) Clone `wf-single-cell` workflow
-4) Create `umi-tools` conda environment: `conda env create -f umi_tools_conda_enviroment.yml`
+4) Create `umitools` conda environment: `conda env create -f umi_tools_conda_enviroment.yml`
 5) Create `isoquant` conda environment: `conda env create -f isoquant_conda_enviroment.yml`
 
 ## Usage
@@ -36,33 +37,42 @@ Download `LR_3CL_cancer_R1_1.sub1000k.fastq.gz` using SRA-toolkit and BioProject
 ### Cell barcode (CB) and unique molecular identifier (UMI) assignment using `wf-single-cell`
 Details found here: https://github.com/epi2me-labs/wf-single-cell
 ```
-nextflow run epi2me-labs/wf-single-cell -r v0.1.5 \
-    -w ${OUTPUT}/${PREFIX}_workspace
+nextflow run epi2me-labs/wf-single-cell \
+    -r v0.1.5 \
+    -w ${OUTPUT}/${PREFIX}_workspace \
     -c ${CONFIG} \
     -profile singularity \
-    --max_threads {CORES} \
-	  --resources_mm2_max_threads {CORES} \
+    --max_threads ${CORES} \
+    --resources_mm2_max_threads ${CORES} \
     --fastq ${FQ} \
     --ref_genome_dir ${REFERENCE} \
     --out_dir ${OUTPUT}
 
 # merge .bam intermediates
-cd ${OUTPUT}/bams
+cd ${OUTPUT}/${PREFIX}/bams
 samtools merge wf_SC.bam *.bam
 samtools index wf_SC.bam
 ```
 #### Output
-Intermediate chromosome-specific .bam files are created from the `wf-single-cell` workflow. Then, `samtools` is required to merge these .bam files before UMI group assignment using `umi-tools`.
+Intermediate chromosome-specific .bam files are created from the `wf-single-cell` workflow. Then, `samtools` is required to merge these .bam files before UMI group assignment using the `umi-tools` package.
 
 ### UMI deduplication using `umi-tools`
 Details found here: https://github.com/CGATOxford/UMI-tools
 ```
+# load umitools conda env
+source activate umitools
+
 # tag merged bam
-umi_tools group -I ${OUTPUT}/wf_SC.bam --group-out=grouped.tsv --output-bam --log=group.log --paired
+umi_tools group \
+    -I ${OUTPUT}/${PREFIX}/bams/wf_SC.bam \
+    --group-out=grouped.tsv \
+    --output-bam \
+    --log=group.log \
+    --paired
 
 # keep longest read in each UMI group (dedup_UMI.py included in git repo)
 ### Alternatively, use `umi_tools dedup`
-python3 dedup_UMI.py ${OUTPUT}/grouped_sorted.bam
+python3 dedup_UMI.py ${OUTPUT}/${PREFIX}/bams/wf_SC.bam
 ```
 #### Output
 Resultant .bam file contains representative sequence for each UMI group.
@@ -70,7 +80,16 @@ Resultant .bam file contains representative sequence for each UMI group.
 ### Transcript detection and quantitation using `isoquant`
 Details found here: https://github.com/ablab/IsoQuant
 ```
-isoquant.py --reference ${REFERENCE} --genedb ${GTF} --bam ${OUTPUT}/bamf.bam --data_type (nanopore) -o ${OUTPUT}
+# load isoquant conda env
+source activate isoquant
+
+# run isoquant
+isoquant.py \
+    --reference ${REFERENCE} \
+    --genedb ${GTF} \
+    --bam ${OUTPUT}/dedup.bam \
+    --data_type nanopore \
+    -o ${OUTPUT}/isoquant
 ```
 #### Output
 The cell-by-gene and cell-by-transcript tables (`SAMPLE_ID.gene_grouped_counts.tsv` and `SAMPLE_ID.transcript_grouped_counts.tsv`, respectively) were used in downstream analyses. 
