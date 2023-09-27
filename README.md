@@ -64,15 +64,30 @@ source activate umitools
 
 # tag merged bam
 umi_tools group \
-    -I ${OUTPUT}/${PREFIX}/bams/wf_SC.bam \
-    --group-out=grouped.tsv \
     --output-bam \
-    --log=group.log \
-    --paired
+    --stdin=${OUTPUT}/${PREFIX}/bams/wf_SC.bam \
+    --stdout=${OUTPUT}/${PREFIX}/bams/wf_SC.grouped.bam \
+    --per-cell \
+    --per-gene \
+    --extract-umi-method=tag \
+    --umi-tag=UB \
+    --cell-tag=CB \
+    --gene-tag=GN
 
 # keep longest read in each UMI group (dedup_UMI.py included in git repo)
 ### Alternatively, use `umi_tools dedup`
-python3 dedup_UMI.py ${OUTPUT}/${PREFIX}/bams/wf_SC.bam
+python3 dedup_UMI.py ${OUTPUT}/${PREFIX}/bams/wf_SC.grouped.bam
+
+samtools view \
+-N ${OUTPUT}/${PREFIX}/bams/qname_umitools.txt \
+-o ${OUTPUT}/${PREFIX}/bams/wf_SC.dedup.bam \
+${OUTPUT}/${PREFIX}/bams/wf_SC.grouped.bam
+
+samtools sort \
+-o ${OUTPUT}/${PREFIX}/bams/wf_SC.dedup.sorted.bam
+${OUTPUT}/${PREFIX}/bams/wf_SC.dedup.bam
+
+samtools index ${OUTPUT}/${PREFIX}/bams/wf_SC.dedup.sorted.bam
 ```
 #### Output
 Resultant .bam file contains representative sequence for each UMI group.
@@ -87,8 +102,9 @@ source activate isoquant
 isoquant.py \
     --reference ${REFERENCE} \
     --genedb ${GTF} \
-    --bam ${OUTPUT}/dedup.bam \
+    --bam ${OUTPUT}/${PREFIX}/bams/wf_SC.dedup.sorted.bam \
     --data_type nanopore \
+    --read_group tag:CB \
     -o ${OUTPUT}/isoquant
 ```
 #### Output
