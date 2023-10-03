@@ -59,13 +59,16 @@ Intermediate chromosome-specific .bam files are created from the `wf-single-cell
 ### UMI deduplication using `umi-tools`
 Details found here: https://github.com/CGATOxford/UMI-tools
 ```
+# prior to running `umi-tools`, filter out records missing a 12-n.t. UMI sequence.
+python3 tidy_UMI.py ${OUTPUT}/${PREFIX}/bams/wf_SC.bam    # output has a .tidy.bam suffix
+
 # load umitools conda env
 source activate umitools
 
 # tag merged bam
 umi_tools group \
     --output-bam \
-    --stdin=${OUTPUT}/${PREFIX}/bams/wf_SC.bam \
+    --stdin=${OUTPUT}/${PREFIX}/bams/wf_SC.tidy.bam \
     --stdout=${OUTPUT}/${PREFIX}/bams/wf_SC.grouped.bam \
     --per-cell \
     --per-gene \
