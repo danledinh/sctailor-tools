@@ -113,7 +113,7 @@ isoquant.py \
 #### Output
 The cell-by-gene and cell-by-transcript tables (`SAMPLE_ID.gene_grouped_counts.tsv` and `SAMPLE_ID.transcript_grouped_counts.tsv`, respectively) were used in downstream analyses. 
 
-### Specialized analysis scripts
-See files with `analysis.` prefix: 
+### Specialized analysis scripts and functions
+See files with `analysis.` prefix.
 1) `analysis.merge.py` = Regression-based matrix merge (two or more targeting panels on a single sample) 
 2) `analysis.haplotype.py` = Haplotype determination
